@@ -5,6 +5,80 @@ library(tidyverse)
 library(ggrepel)
 library(ggthemes)
 
+ # # Curso de Campo da Mata Atlântica 2024 # #
+#PO1 - O que determina o investimento energético na produção da teia de captura? Cryptacheae
+
+#Grupo: Victor, Leticia, Maria, Gustavo
+
+#Gráfico com as predições-------
+
+# Criar dados de exemplo
+num_raios_pegajosos <- c(5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100)  
+bci <- c(2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40)                      
+
+# Criar o gráfico sem valores nos eixos x e y
+num_raios_pegajosos <- c(5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100)  
+bci <- c(2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40)                      
+
+# Criar o gráfico
+plot(bci, num_raios_pegajosos, type = "p", pch = 16, col = "black", xlab = "Índice de Condição Corporal (BCI)", ylab = "Nº de Raios Pegajosos", main = "Relação entre BCI e Raios Pegajosos", cex = 1, cex.main = 1.2, cex.lab = 1.2, cex.axis = 1.2, axes = TRUE, frame.plot = FALSE, xlim = c(0, 45), ylim = c(0, 105), xaxs = "i", yaxs = "i")
+
+
+#Começando nossas análises-----
+setwd("C:/Users/vitos/Desktop/Curso De Campo Da Mata Atlântica/PO1")
+
+#Fazendo com que o R transforme meu documento txt em um objeto
+
+dados<-read.table("tabela.tsv", h=T)
+dados$bci <- gsub(",", ".", dados$bci)
+attach(dados)
+plot(dados)
+summary(dados)
+dados__sem_NA<-na.omit(dados)
+
+#Modelo completo
+m1<-glm(nfio~bci)
+
+#Avaliação de resíduos (dharma)
+
+library(DHARMa)
+
+DHARMa::simulateResiduals(m1, plot = T)
+
+#Ajuste do modelo
+m2<-glm(nfio~bci, family=poisson)
+summary(m2)
+DHARMa::simulateResiduals(m2, plot = T)
+
+#Ajuste do modelo
+m3<-glm(nfio~bci, family=quasipoisson)
+
+summary(m3)
+DHARMa::simulateResiduals(m3, plot = T)
+par(mfrow=c(2,2))
+plot(m3)
+hist(nfio)
+
+#Modelo Nulo
+mnulo<-glm(nfio~1, family=quasipoisson)
+
+#comparar os dois modelos para ver qual explica mais os dados (com ANOVA)
+
+anova(m3,test="F")
+
+#F(1,16)= 1.4703, p=0,38 
+
+
+#Gráfico-------
+
+# Criar o gráfico
+plot(bci, nfio, type = "p", pch = 16, col = "black", xlab = "Índice de Condição Corporal (BCI)", ylab = "Nº de Raios Pegajosos", main = "Relação entre BCI e Raios Pegajosos", cex = 1.4, cex.main = 1.2, cex.lab = 1.2, cex.axis = 1.2, axes = TRUE, frame.plot = FALSE, xlim = c(0,1.7), ylim = c(-1, 60), xaxs = "i", yaxs = "i")
+
+par(mfrow=c(1,1))
+summary(dados)
+is.numeric(dados$bci)
+dados$bci<-as.numeric(dados$bci)
+
 
 
 gpo1 - ggplot()
