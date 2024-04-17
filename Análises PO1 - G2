@@ -1,0 +1,10 @@
+# # PO1 - G2 # # 
+
+library(ggplot2)
+library(tidyverse)
+library(ggrepel)
+library(ggthemes)
+
+
+
+gpo1 - ggplot()
